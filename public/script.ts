@@ -49,4 +49,25 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('サーバーに接続できませんでした。ネットワーク設定を確認してください。');
         }
     });
+    // Thêm xử lý cho nút Login
+const loginBtn = document.querySelector('.btn-login') as HTMLButtonElement;
+
+loginBtn?.addEventListener('click', async () => {
+    const username = idInput.value;
+    const password = passInput.value;
+
+    const response = await fetch('/api/server', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', username, password }) // Gửi action: 'login'
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+        alert(result.message); // "ログインに成功しました！"
+        // Sau này bạn có thể chuyển hướng trang tại đây: window.location.href = "/dashboard.html";
+    } else {
+        alert("エラー: " + result.error);
+    }
+});
 });
