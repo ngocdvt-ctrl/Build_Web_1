@@ -23,16 +23,29 @@
       overflow: hidden;
     }
 
+    /* ===== HEADER ===== */
+    .header {
+      padding: 20px 24px;
+      font-size: 20px;
+      font-weight: 600;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
     .row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center; /* 🔧 FIX */
       padding: 20px 24px;
       border-bottom: 1px solid #e0e0e0;
+      gap: 16px;
     }
 
     .row:last-child {
       border-bottom: none;
+    }
+
+    .content {
+      max-width: 520px;
     }
 
     .label {
@@ -56,9 +69,11 @@
       border: 1px solid #999;
       background: #fff;
       padding: 6px 18px;
-      border-radius: 999px;
+      border-radius: 20px; /* 🔧 FIX: đồng bộ */
       font-size: 14px;
       cursor: pointer;
+      white-space: nowrap;
+      height: fit-content;
     }
 
     .edit-btn:hover {
@@ -70,9 +85,12 @@
 <body>
   <div class="container">
 
+    <!-- HEADER -->
+    <div class="header">会員情報</div>
+
     <!-- 名前 -->
     <div class="row">
-      <div>
+      <div class="content">
         <div class="label">名前</div>
         <div class="value">amistad12790</div>
       </div>
@@ -81,7 +99,7 @@
 
     <!-- メール -->
     <div class="row">
-      <div>
+      <div class="content">
         <div class="label">Eメール</div>
         <div class="value">ngocdvt@gmail.com</div>
       </div>
@@ -90,7 +108,7 @@
 
     <!-- 携帯電話番号 -->
     <div class="row">
-      <div>
+      <div class="content">
         <div class="label">携帯電話番号</div>
         <div class="value">+818047636889</div>
         <div class="sub-text">
@@ -103,7 +121,7 @@
 
     <!-- パスワード -->
     <div class="row">
-      <div>
+      <div class="content">
         <div class="label">パスワード</div>
         <div class="value">********</div>
       </div>
