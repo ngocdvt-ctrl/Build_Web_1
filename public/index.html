@@ -1,74 +1,79 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appirits - Corporate Website</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appirits - Corporate Website</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <header>
-        <nav class="container">
-            <ul>
-                <li><a href="/">会社概要</a></li>
-                <li><a href="/services">サービス・製品</a></li>
-                <li><a href="/news">ニュース</a></li>
-                <li><a href="/recruit">採用情報</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <main class="container">
-        <section class="slider">
-            <button class="arrow prev" type="button">&lt;</button>
-            <div class="slider-content">
-                <h2>IT関連写真</h2>
-            </div>
-            <button class="arrow next" type="button">&gt;</button>
-        </section>
+  <!-- ===== HEADER ===== -->
+  <header>
+    <nav class="container">
+      <ul class="nav-list">
+        <li><a href="/">会社概要</a></li>
+        <li><a href="/services">サービス・製品</a></li>
+        <li><a href="/news">ニュース</a></li>
+        <li><a href="/recruit">採用情報</a></li>
+      </ul>
+    </nav>
+  </header>
 
-        <section class="auth-form">
-            <div class="input-group">
-                <label for="username">ID</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password">
-            </div>
-            <div class="button-group">
-                <button type="button" class="btn btn-register">会員登録</button>
-                <button type="button" class="btn btn-login">ログイン</button>
-            </div>
-        </section>
+  <!-- ===== MAIN ===== -->
+  <main class="container">
 
-        <section class="contact-info">
-            <a href="tel:03-6684-5111" class="contact-item tel">
-                <span>00-0000-0000</span>
-            </a>
-            <a href="/contact" class="contact-item form">
-                <span>お問い合わせフォーム</span>
-            </a>
-        </section>
-    </main>
+    <!-- HERO / SLIDER -->
+    <section class="slider">
+      <button class="arrow prev" type="button">&lt;</button>
 
-    <footer>
-        <div class="container footer-grid">
-            <div class="company-info">
-                <img src="logo.png" alt="API" class="logo">
-                <p>株式会社API</p>
-                <p>〒000-0000 東京都渋谷区増田町1番1号</p>
-                <p>SHIBUYA STRATERGY BUILDING 100FLOOR</p>
-            </div>
-            <div class="footer-links">
-                <p>AWS × 協働内製化</p>
-                <p>内製アプリ開発</p>
-                <p>AI搭載自動化</p>
-                <p>脆弱性強化</p>
-            </div>
-        </div>
-    </footer>
+      <div class="slider-content">
+        <h2>ITで未来を創る</h2>
+        <p>ビジネスを支えるITソリューションを提供します。</p>
+      </div>
 
-    <script src="script.js"></script>
+      <button class="arrow next" type="button">&gt;</button>
+    </section>
+
+    <!-- MEMBER ENTRY -->
+    <section class="auth-entry">
+      <a href="/register.html" class="btn btn-register">会員登録</a>
+      <a href="/login.html" class="btn btn-login">ログイン</a>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact-info">
+      <a href="tel:03-6684-5111" class="contact-item tel">
+        <span>03-6684-5111</span>
+      </a>
+      <a href="/contact" class="contact-item form">
+        <span>お問い合わせフォーム</span>
+      </a>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="container footer-grid">
+
+      <div class="company-info">
+        <img src="logo.png" alt="API" class="logo">
+        <p>株式会社API</p>
+        <p>〒000-0000 東京都渋谷区増田町1番1号</p>
+        <p>SHIBUYA STRATERGY BUILDING 100FLOOR</p>
+      </div>
+
+      <div class="footer-links">
+        <p>AWS × 協働内製化</p>
+        <p>内製アプリ開発</p>
+        <p>AI搭載自動化</p>
+        <p>脆弱性強化</p>
+      </div>
+
+    </div>
+  </footer>
+
 </body>
 </html>
