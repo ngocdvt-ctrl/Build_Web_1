@@ -1,156 +1,77 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>会員登録</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 30px 0; /* ↓ từ 40px */
+  }
 
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                   Roboto, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 40px 0;
-    }
+  .page-title {
+    max-width: 760px;
+    margin: 0 auto 16px; /* ↓ */
+    padding: 0 12px;
+    font-size: 20px; /* ↓ nhẹ */
+    font-weight: 600;
+  }
 
-    /* ===== PAGE TITLE ===== */
-    .page-title {
-      max-width: 760px;
-      margin: 0 auto 20px;
-      padding: 0 12px;
-      font-size: 22px;
-      font-weight: 600;
-    }
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
 
-    /* ===== FORM CARD ===== */
-    .container {
-      max-width: 760px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      overflow: hidden;
-    }
+  /* ↓↓↓ GIẢM CHIỀU CAO CHÍNH */
+  .row {
+    padding: 18px 24px; /* ↓ từ 24px */
+    border-bottom: 1px solid #e0e0e0;
+  }
 
-    .row {
-      padding: 24px;
-      border-bottom: 1px solid #e0e0e0;
-    }
+  .label {
+    font-weight: 600;
+    margin-bottom: 6px; /* ↓ */
+  }
 
-    .row:last-child {
-      border-bottom: none;
-    }
+  .input {
+    width: 100%;
+    max-width: 520px;
+    padding: 8px 12px; /* ↓ */
+    font-size: 14px; /* ↓ */
+    border: 2px solid #999;
+    border-radius: 4px;
+  }
 
-    .label {
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
+  .sub-text {
+    margin-top: 6px; /* ↓ */
+    font-size: 12px; /* ↓ */
+    line-height: 1.4; /* ↓ */
+    color: #666;
+    max-width: 520px;
+  }
 
-    .required {
-      color: #d93025;
-      margin-left: 6px;
-    }
+  .button-area {
+    display: flex;
+    justify-content: flex-end;
+    padding: 18px 24px; /* ↓ */
+    background: #fff;
+  }
 
-    .input {
-      width: 100%;
-      max-width: 520px;
-      padding: 10px 12px;
-      font-size: 15px;
-      border: 2px solid #999;
-      border-radius: 4px;
-    }
+  .confirm-btn {
+    background: #fff;
+    color: #ff7a00;
+    border: 2px solid #ff7a00;
+    padding: 10px 24px; /* ↓ */
+    border-radius: 28px;
+    font-size: 15px; /* ↓ */
+    font-weight: 600;
+    cursor: pointer;
+  }
 
-    .input:focus {
-      outline: none;
-      border-color: #ff7a00;
-    }
-
-    .sub-text {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #666;
-      line-height: 1.5;
-      max-width: 520px;
-    }
-
-    /* ===== BUTTON AREA ===== */
-    .button-area {
-      display: flex;
-      justify-content: flex-end;
-      padding: 24px;
-      background: #fff;
-    }
-
-    .confirm-btn{
-      background: #fff;
-      color: #ff7a00;
-      border: 2px solid #ff7a00;
-      padding: 12px 28px;
-      border-radius: 28px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .confirm-btn:hover {
-      background: #ff7a00;
-      color: #fff;
-    }
-  </style>
-</head>
-
-<body>
-
-  <!-- PAGE TITLE -->
-  <div class="page-title">会員登録</div>
-
-  <!-- FORM -->
-  <form class="container" action="register-confirm.html" method="get">
-
-    <!-- 名前 -->
-    <div class="row">
-      <div class="label">
-        名前<span class="required">＊</span>
-      </div>
-      <input type="text" name="name" class="input" required>
-    </div>
-
-    <!-- Eメール -->
-    <div class="row">
-      <div class="label">
-        Eメール<span class="required">＊</span>
-      </div>
-      <input type="email" name="email" class="input" required>
-    </div>
-
-    <!-- 携帯電話番号 -->
-    <div class="row">
-      <div class="label">
-        携帯電話番号<span class="required">＊</span>
-      </div>
-      <input type="tel" name="phone" class="input" required>
-
-      <div class="sub-text">
-        この携帯電話番号ですばやくサインインし、パスワードを簡単に回復し、
-        セキュリティ通知を受け取ることができます。
-      </div>
-    </div>
-
-    <!-- パスワード -->
-    <div class="row">
-      <div class="label">
-        パスワード<span class="required">＊</span>
-      </div>
-      <input type="password" name="password" class="input" required>
-    </div>
-
-    <!-- BUTTON -->
-    <div class="button-area">
-      <button type="submit" class="confirm-btn">確認画面へ</button>
-    </div>
-
-  </form>
-
-</body>
-</html>
+  .confirm-btn:hover {
+    background: #ff7a00;
+    color: #fff;
+  }
+</style>
