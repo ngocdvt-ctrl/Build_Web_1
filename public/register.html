@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>会員登録</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
     body {
@@ -16,35 +16,44 @@
 
     /* ===== PAGE TITLE ===== */
     .page-title {
-      max-width: 760px;
-      margin: 0 auto 20px;
-      padding: 0 12px;
+      max-width: 700px;
+      margin: 0 auto 16px;
+      padding: 0 8px;
       font-size: 22px;
       font-weight: 600;
     }
 
-    /* ===== FORM CARD ===== */
+    /* ===== FORM CARD (SAME AS MEMBER) ===== */
     .container {
-      max-width: 760px;
+      max-width: 700px;
       margin: 0 auto;
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       overflow: hidden;
     }
 
     .row {
-      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 20px 24px;
       border-bottom: 1px solid #e0e0e0;
+      gap: 16px;
     }
 
     .row:last-child {
       border-bottom: none;
     }
 
+    .content {
+      max-width: 520px;
+      width: 100%;
+    }
+
     .label {
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .required {
@@ -54,10 +63,9 @@
 
     .input {
       width: 100%;
-      max-width: 520px;
       padding: 10px 12px;
       font-size: 15px;
-      border: 2px solid #999;
+      border: 1px solid #999;
       border-radius: 4px;
     }
 
@@ -67,11 +75,10 @@
     }
 
     .sub-text {
-      margin-top: 10px;
+      margin-top: 6px;
       font-size: 13px;
       color: #666;
       line-height: 1.5;
-      max-width: 520px;
     }
 
     /* ===== BUTTON AREA ===== */
@@ -82,7 +89,7 @@
       background: #fff;
     }
 
-    .confirm-btn{
+    .confirm-btn {
       background: #fff;
       color: #ff7a00;
       border: 2px solid #ff7a00;
@@ -110,39 +117,47 @@
 
     <!-- 名前 -->
     <div class="row">
-      <div class="label">
-        名前<span class="required">＊</span>
+      <div class="content">
+        <div class="label">
+          名前<span class="required">＊</span>
+        </div>
+        <input type="text" name="name" class="input" required>
       </div>
-      <input type="text" name="name" class="input" required>
     </div>
 
     <!-- Eメール -->
     <div class="row">
-      <div class="label">
-        Eメール<span class="required">＊</span>
+      <div class="content">
+        <div class="label">
+          Eメール<span class="required">＊</span>
+        </div>
+        <input type="email" name="email" class="input" required>
       </div>
-      <input type="email" name="email" class="input" required>
     </div>
 
     <!-- 携帯電話番号 -->
     <div class="row">
-      <div class="label">
-        携帯電話番号<span class="required">＊</span>
-      </div>
-      <input type="tel" name="phone" class="input" required>
+      <div class="content">
+        <div class="label">
+          携帯電話番号<span class="required">＊</span>
+        </div>
+        <input type="tel" name="phone" class="input" required>
 
-      <div class="sub-text">
-        この携帯電話番号ですばやくサインインし、パスワードを簡単に回復し、
-        セキュリティ通知を受け取ることができます。
+        <div class="sub-text">
+          この携帯電話番号ですばやくサインインし、パスワードを簡単に回復し、
+          セキュリティ通知を受け取ることができます。
+        </div>
       </div>
     </div>
 
     <!-- パスワード -->
     <div class="row">
-      <div class="label">
-        パスワード<span class="required">＊</span>
+      <div class="content">
+        <div class="label">
+          パスワード<span class="required">＊</span>
+        </div>
+        <input type="password" name="password" class="input" required>
       </div>
-      <input type="password" name="password" class="input" required>
     </div>
 
     <!-- BUTTON -->
