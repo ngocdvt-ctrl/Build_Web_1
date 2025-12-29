@@ -120,7 +120,7 @@
         <div class="label">
           名前<span class="required">＊</span>
         </div>
-        <input type="text" name="name" class="input" required title="名前を入力してください">
+        <input type="text" name="name" class="input" required>
       </div>
     </div>
 
@@ -130,7 +130,7 @@
         <div class="label">
           Eメール<span class="required">＊</span>
         </div>
-        <input type="email" name="email" class="input" required title="Eメールを入力してください">
+        <input type="email" name="email" class="input" required>
       </div>
     </div>
 
@@ -140,7 +140,7 @@
         <div class="label">
           携帯電話番号<span class="required">＊</span>
         </div>
-        <input type="tel" name="phone" class="input" required title="携帯電話番号を入力してください">
+        <input type="tel" name="phone" class="input" required>
 
         <div class="sub-text">
           この携帯電話番号ですばやくサインインし、パスワードを簡単に回復し、
@@ -155,7 +155,7 @@
         <div class="label">
           パスワード<span class="required">＊</span>
         </div>
-        <input type="password" name="password" class="input" required title="パスワードを入力してください">
+        <input type="password" name="password" class="input" required>
       </div>
     </div>
 
@@ -165,6 +165,32 @@
     </div>
 
   </form>
+<script>
+  document.querySelectorAll('input[required]').forEach(input => {
+    input.addEventListener('invalid', () => {
+      if (input.validity.valueMissing) {
+        switch (input.name) {
+          case 'name':
+            input.setCustomValidity('名前を入力してください');
+            break;
+          case 'email':
+            input.setCustomValidity('Eメールを入力してください');
+            break;
+          case 'phone':
+            input.setCustomValidity('携帯電話番号を入力してください');
+            break;
+          case 'password':
+            input.setCustomValidity('パスワードを入力してください');
+            break;
+        }
+      }
+    });
+
+    input.addEventListener('input', () => {
+      input.setCustomValidity('');
+    });
+  });
+</script>
 
 </body>
 </html>
