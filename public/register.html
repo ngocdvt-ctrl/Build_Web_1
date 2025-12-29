@@ -23,7 +23,7 @@
       font-weight: 600;
     }
 
-    /* ===== FORM CARD (SAME AS MEMBER) ===== */
+    /* ===== FORM CARD ===== */
     .container {
       max-width: 700px;
       margin: 0 auto;
@@ -34,26 +34,18 @@
     }
 
     .row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 20px 24px;
+      padding: 18px 24px;
       border-bottom: 1px solid #e0e0e0;
-      gap: 16px;
     }
 
     .row:last-child {
       border-bottom: none;
     }
 
-    .content {
-      max-width: 520px;
-      width: 100%;
-    }
-
     .label {
       font-weight: 600;
       margin-bottom: 6px;
+      font-size: 15px;
     }
 
     .required {
@@ -61,17 +53,19 @@
       margin-left: 6px;
     }
 
+    /* ===== UNDERLINE INPUT ===== */
     .input {
       width: 100%;
-      padding: 10px 12px;
+      padding: 6px 4px;
       font-size: 15px;
-      border: 1px solid #999;
-      border-radius: 4px;
+      border: none;
+      border-bottom: 1.5px solid #999;
+      background: transparent;
     }
 
     .input:focus {
       outline: none;
-      border-color: #ff7a00;
+      border-bottom-color: #ff7a00;
     }
 
     .sub-text {
@@ -93,7 +87,7 @@
       background: #fff;
       color: #ff7a00;
       border: 2px solid #ff7a00;
-      padding: 12px 28px;
+      padding: 10px 28px;
       border-radius: 28px;
       font-size: 16px;
       font-weight: 600;
@@ -104,6 +98,15 @@
       background: #ff7a00;
       color: #fff;
     }
+
+    /* ===== MOBILE ADJUST ===== */
+    @media (max-width: 600px) {
+      .input {
+        border: 1px solid #999;
+        padding: 10px 12px;
+        border-radius: 4px;
+      }
+    }
   </style>
 </head>
 
@@ -113,59 +116,4 @@
   <div class="page-title">会員登録</div>
 
   <!-- FORM -->
-  <form class="container" action="register-confirm.html" method="get">
-
-    <!-- 名前 -->
-    <div class="row">
-      <div class="content">
-        <div class="label">
-          名前<span class="required">＊</span>
-        </div>
-        <input type="text" name="name" class="input" required>
-      </div>
-    </div>
-
-    <!-- Eメール -->
-    <div class="row">
-      <div class="content">
-        <div class="label">
-          Eメール<span class="required">＊</span>
-        </div>
-        <input type="email" name="email" class="input" required>
-      </div>
-    </div>
-
-    <!-- 携帯電話番号 -->
-    <div class="row">
-      <div class="content">
-        <div class="label">
-          携帯電話番号<span class="required">＊</span>
-        </div>
-        <input type="tel" name="phone" class="input" required>
-
-        <div class="sub-text">
-          この携帯電話番号ですばやくサインインし、パスワードを簡単に回復し、
-          セキュリティ通知を受け取ることができます。
-        </div>
-      </div>
-    </div>
-
-    <!-- パスワード -->
-    <div class="row">
-      <div class="content">
-        <div class="label">
-          パスワード<span class="required">＊</span>
-        </div>
-        <input type="password" name="password" class="input" required>
-      </div>
-    </div>
-
-    <!-- BUTTON -->
-    <div class="button-area">
-      <button type="submit" class="confirm-btn">確認画面へ</button>
-    </div>
-
-  </form>
-
-</body>
-</html>
+  <form class="container" action="/register-confirm.html" method="get">
