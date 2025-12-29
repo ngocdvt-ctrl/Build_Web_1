@@ -15,6 +15,7 @@ body {
     font-family: "Helvetica Neue", Arial, sans-serif;
     line-height: 1.6;
     color: var(--text-dark);
+    background: #fff;
 }
 
 .container {
@@ -23,7 +24,9 @@ body {
     padding: 0 20px;
 }
 
-/* Header Navigation */
+/* =========================
+   Header Navigation
+========================= */
 header {
     padding: 20px 0;
     border-bottom: 1px solid #ddd;
@@ -42,7 +45,9 @@ header a {
     font-size: 1.1rem;
 }
 
-/* Slider Section */
+/* =========================
+   Slider Section
+========================= */
 .slider {
     background: #e0e0e0;
     height: 300px;
@@ -67,7 +72,9 @@ header a {
     color: var(--primary-color);
 }
 
-/* Form Section */
+/* =========================
+   Form Section (UNDERLINE)
+========================= */
 .auth-form {
     max-width: 400px;
     margin: 40px auto;
@@ -76,25 +83,44 @@ header a {
 .input-group {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 22px;
 }
 
 .input-group label {
     width: 100px;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
 }
 
+/* 🔽 UNDERLINE INPUT STYLE */
 .input-group input {
     flex: 1;
-    padding: 10px;
-    border: 2px solid var(--primary-color);
+    padding: 6px 4px;
+    font-size: 1.1rem;
+    border: none;
+    border-bottom: 2px solid var(--primary-color);
+    background: transparent;
 }
 
+/* Focus state */
+.input-group input:focus {
+    outline: none;
+    border-bottom-color: var(--accent-color);
+}
+
+/* Placeholder subtle */
+.input-group input::placeholder {
+    color: #aaa;
+}
+
+/* =========================
+   Button Group
+========================= */
 .button-group {
     display: flex;
     gap: 20px;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 .btn {
@@ -113,7 +139,9 @@ header a {
     color: white;
 }
 
-/* Contact Section */
+/* =========================
+   Contact Section
+========================= */
 .contact-info {
     display: flex;
     gap: 20px;
@@ -130,7 +158,9 @@ header a {
     border-radius: 30px;
 }
 
-/* Footer Section */
+/* =========================
+   Footer Section
+========================= */
 footer {
     background: var(--primary-color);
     color: white;
