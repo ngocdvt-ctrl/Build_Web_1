@@ -99,7 +99,7 @@ body {
 /* ===== BUTTON AREA ===== */
 .button-area {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 24px;
     background: #fff;
 }
@@ -138,3 +138,14 @@ body {
 .back-btn:hover {
     background: #f0f0f0;
 }
+
+.note {
+    max-width: 700px;
+    margin: 16px auto 0;
+    padding: 0 8px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+    text-align: center; /* ⬅ căn giữa nội dung */
+}
+
