@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>ログイン</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- CSS CHUNG -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- PAGE TITLE -->
+  <div class="page-title">ログイン</div>
+
+  <!-- LOGIN FORM -->
+  <div class="container">
+
+    <!-- Eメール -->
+    <div class="row">
+      <div class="content">
+        <div class="label">
+          Eメール<span class="required">＊</span>
+        </div>
+        <input
+          type="email"
+          class="input"
+          id="email"
+          required
+          autocomplete="email"
+        >
+      </div>
+    </div>
+
+    <!-- パスワード -->
+    <div class="row">
+      <div class="content">
+        <div class="label">
+          パスワード<span class="required">＊</span>
+        </div>
+        <input
+          type="password"
+          class="input"
+          id="password"
+          required
+          autocomplete="current-password"
+        >
+      </div>
+    </div>
+
+    <!-- ERROR MESSAGE -->
+    <div class="row" id="error-row" style="display:none;">
+      <div class="content">
+        <div style="color:#d93025; font-size:14px;" id="error-message"></div>
+      </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="button-area">
+      <button
+        type="button"
+        class="back-btn"
+        onclick="location.href='index.html'"
+      >
+        戻る
+      </button>
+
+      <button
+        type="button"
+        class="confirm-btn"
+        onclick="login()"
+      >
+        ログイン
+      </button>
+    </div>
+
+  </div>
+
+  <!-- NOTE -->
+  <div class="note">
+    登録済みのメールアドレスとパスワードを入力してください。
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    async function login() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const errorRow = document.getElementById("error-row");
+      const errorMessage = document.getElementById("error-message");
+
+      errorRow.style.display = "none";
+      errorMessage.textContent = "";
+
+      if (!email || !password) {
+        errorMessage.textContent = "メールアドレスとパスワードを入力してください";
+        errorRow.style.display = "block";
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email,
+            password
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          errorMessage.textContent = result.message || "ログインに失敗しました";
+          errorRow.style.display = "block";
+          return;
+        }
+
+        /* ✅ Login success */
+        // Lv3: session cookie is set by backend (httpOnly)
+        location.href = "dashboard.html";
+
+      } catch (err) {
+        console.error(err);
+        errorMessage.textContent = "通信エラーが発生しました";
+        errorRow.style.display = "block";
+      }
+    }
+  </script>
+
+</body>
+</html>

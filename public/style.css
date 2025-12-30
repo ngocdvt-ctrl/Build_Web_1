@@ -30,6 +30,15 @@ body {
     font-weight: 600;
 }
 
+.container-wide {
+    max-width: 1000px;    /* Độ rộng cũ của trang chủ */
+    background: transparent; /* Loại bỏ nền trắng của form */
+    box-shadow: none;        /* Loại bỏ đổ bóng của form */
+    border-radius: 0;        /* Loại bỏ bo góc */
+    overflow: visible;
+    padding: 0 20px;         /* Khoảng cách đệm hai bên */
+}
+
 /* ===== FORM CARD ===== */
 .container {
     max-width: 700px;

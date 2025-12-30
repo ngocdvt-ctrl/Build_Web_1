@@ -1,16 +1,11 @@
--- 001_create_users.sql
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-  email TEXT NOT NULL UNIQUE,
-  password_hash TEXT NOT NULL,
-
   name TEXT NOT NULL,
-  phone TEXT,
-
-  email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  email TEXT NOT NULL UNIQUE,
+  phone TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
+  status VARCHAR(20) DEFAULT 'pending',
   verification_token TEXT,
-
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  email_verified_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT now()
 );

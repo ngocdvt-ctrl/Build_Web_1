@@ -5,8 +5,8 @@
   <title>登録内容の確認</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- ✅ DÙNG CSS CHUNG -->
-  <link rel="stylesheet" href="style.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
@@ -51,11 +51,11 @@
 
     <!-- BUTTONS -->
     <div class="button-area">
-      <button type="button" class="back-btn" onclick="history.back()">
+      <button type="button" class="back-btn" onclick="goBack()">
         戻る
       </button>
 
-      <button type="button" class="confirm-btn" onclick="completeRegister()">
+      <button type="button" class="confirm-btn" onclick="submitRegister()">
         登録
       </button>
     </div>
@@ -64,26 +64,75 @@
 
   <!-- NOTE -->
   <div class="note">
-    登録内容に間違いがないかご確認のうえ、「登録」ボタンを押してください。<br>
+    登録内容に間違いがないかご確認のうえ、「登録」ボタンを押してください。<br />
     登録後、確認メールが送信されます。
   </div>
 
   <!-- SCRIPT -->
   <script>
-    const params = new URLSearchParams(location.search);
+    /* ==============================
+       1. Load data from sessionStorage
+    ============================== */
+    const name = sessionStorage.getItem("name");
+    const email = sessionStorage.getItem("email");
+    const phone = sessionStorage.getItem("phone");
+    const password = sessionStorage.getItem("password");
 
-    document.getElementById("confirm-name").textContent =
-      params.get("name") || "";
+    /* Nếu truy cập trực tiếp → quay lại register */
+    if (!name || !email || !phone || !password) {
+      alert("登録情報が見つかりません。最初からやり直してください。");
+      location.href = "register.html";
+    }
 
-    document.getElementById("confirm-email").textContent =
-      params.get("email") || "";
+    document.getElementById("confirm-name").textContent = name;
+    document.getElementById("confirm-email").textContent = email;
+    document.getElementById("confirm-phone").textContent = phone;
 
-    document.getElementById("confirm-phone").textContent =
-      params.get("phone") || "";
+    /* ==============================
+       2. Back button
+    ============================== */
+    function goBack() {
+      history.back();
+    }
 
-    function completeRegister() {
-      // demo用：本来はここで API に POST
-      location.href = "register-pending.html";
+    /* ==============================
+       3. Submit to backend API
+    ============================== */
+    async function submitRegister() {
+      try {
+        const response = await fetch("/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            phone,
+            password,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          alert(result.message || "登録に失敗しました");
+          return;
+        }
+
+        /* 成功 → clear sessionStorage */
+        sessionStorage.removeItem("password");
+        sessionStorage.removeItem("name");
+        sessionStorage.removeItem("email");
+        sessionStorage.removeItem("phone");
+
+        /* 次の画面へ */
+        location.href = "register-pending.html";
+
+      } catch (error) {
+        console.error("API error:", error);
+        alert("通信エラーが発生しました");
+      }
     }
   </script>
 
