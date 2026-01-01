@@ -17,7 +17,6 @@ export default async function handler(
   req: VercelRequest,
   res: VercelResponse
 ) {
-  /* ✅ POST only */
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
@@ -25,19 +24,15 @@ export default async function handler(
   try {
     const { email, password } = req.body;
 
-    /* ==============================
-       1️⃣ Validate input
-    ============================== */
+    /* 1️⃣ Validate */
     if (!email || !password) {
       return res.status(400).json({
         message: "メールアドレスとパスワードを入力してください",
       });
     }
 
-    /* ==============================
-       2️⃣ Find user
-    ============================== */
-    const result = await pool.query(
+    /* 2️⃣ Get user */
+    const userResult = await pool.query(
       `
       SELECT id, password_hash, status
       FROM users
@@ -46,30 +41,23 @@ export default async function handler(
       [email]
     );
 
-    if (result.rowCount === 0) {
+    if (userResult.rowCount === 0) {
       return res.status(401).json({
         message: "メールアドレスまたはパスワードが正しくありません",
       });
     }
 
-    const user = result.rows[0];
+    const user = userResult.rows[0];
 
-    /* ==============================
-       3️⃣ Status check (Lv3)
-    ============================== */
+    /* 3️⃣ Status check */
     if (user.status !== "active") {
       return res.status(403).json({
         message: "メール認証が完了していません",
       });
     }
 
-    /* ==============================
-       4️⃣ Password check
-    ============================== */
-    const isMatch = await bcrypt.compare(
-      password,
-      user.password_hash
-    );
+    /* 4️⃣ Password check */
+    const isMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!isMatch) {
       return res.status(401).json({
@@ -78,38 +66,32 @@ export default async function handler(
     }
 
     /* ==============================
-       5️⃣ Create session token
+       5️⃣ Create session
     ============================== */
+
     const sessionToken = crypto.randomBytes(32).toString("hex");
 
-    /* ==============================
-       6️⃣ Save session (DB)
-    ============================== */
+    // Session expires in 7 days
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    /* 6️⃣ Insert session */
     await pool.query(
       `
       INSERT INTO sessions (user_id, session_token, expires_at)
-      VALUES ($1, $2, NOW() + INTERVAL '7 days')
+      VALUES ($1, $2, $3)
       `,
-      [user.id, sessionToken]
+      [user.id, sessionToken, expiresAt]
     );
 
-    /* ==============================
-       7️⃣ Set httpOnly cookie
-    ============================== */
-    res.setHeader("Set-Cookie", [
-      `session=${sessionToken}; Path=/; HttpOnly; SameSite=Lax; Secure`
-    ]);
-
-    /* ==============================
-       8️⃣ Success
-    ============================== */
+    /* 7️⃣ Response (cookie sẽ làm ở bước sau) */
     return res.status(200).json({
       message: "ログイン成功",
+      sessionToken, // ⚠️ tạm trả về để test
     });
 
-  } catch (error) {
-    console.error("Login error:", error);
-
+  } catch (err) {
+    console.error("Login error:", err);
     return res.status(500).json({
       message: "サーバーエラーが発生しました",
     });
