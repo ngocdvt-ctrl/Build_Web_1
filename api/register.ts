@@ -2,7 +2,6 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import bcrypt from "bcrypt";
 import { Pool } from "pg";
 import crypto from "crypto";
-import { Resend } from "resend";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -38,12 +37,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await client.query("BEGIN");
 
     // 3) Duplicate check
-    const existing = await client.query("SELECT id FROM users WHERE email = $1", [
-      normalizedEmail,
-    ]);
+    const existing = await client.query(
+      "SELECT id FROM users WHERE email = $1",
+      [normalizedEmail]
+    );
+
     if (existing.rowCount && existing.rowCount > 0) {
       await client.query("ROLLBACK");
-      return res.status(409).json({ message: "このメールアドレスは既に登録されています" });
+      return res
+        .status(409)
+        .json({ message: "このメールアドレスは既に登録されています" });
     }
 
     // 4) Hash
@@ -76,40 +79,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 7) Commit DB
     await client.query("COMMIT");
 
-    // 8) Send email via Resend (REAL)
-    const resendKey = process.env.RESEND_API_KEY;
-    if (!resendKey) {
-      console.warn("RESEND_API_KEY is missing. Email not sent.");
-      // DB đã insert rồi, trả message để anh debug
-      return res.status(201).json({
-        message:
-          "仮登録が完了しました（メール送信設定が未完了です）。RESEND_API_KEYを設定してください。",
-      });
-    }
-
-    const resend = new Resend(resendKey);
-
+    // 8) DEV: log verify URL (Option A)
     const baseUrl = getBaseUrl(req);
-    // ✅ thống nhất endpoint verify: anh đang có verify-email.ts -> dùng /api/verify-email
     const verifyUrl = `${baseUrl}/api/verify-email?token=${verificationToken}`;
 
-    await resend.emails.send({
-      from: process.env.MAIL_FROM || "onboarding@resend.dev",
-      to: normalizedEmail,
-      subject: "【ngoc-web】メールアドレス確認",
-      html: `
-        <p>${name} 様</p>
-        <p>以下のリンクをクリックしてメールアドレスを確認してください。</p>
-        <p><a href="${verifyUrl}">${verifyUrl}</a></p>
-        <p>※リンクの有効期限：1時間</p>
-      `,
-    });
+    console.log(`[DEV] Verify URL: ${verifyUrl}`);
 
+    // Trả về message để frontend redirect sang register-pending.html
     return res.status(201).json({
-      message: "仮登録が完了しました。確認メールをご確認ください。",
+      message: "仮登録が完了しました（開発中：メールは送信せずURLをログ出力します）。",
+      verifyUrl, // tiện test; sau này production có thể bỏ field này
     });
   } catch (error) {
-    // rollback chỉ khi transaction đang mở (có thể fail trước COMMIT)
+    // rollback chỉ khi transaction đang mở
     try {
       await client.query("ROLLBACK");
     } catch {}
