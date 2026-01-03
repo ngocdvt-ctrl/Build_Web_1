@@ -111,8 +111,8 @@
   <!-- PAGE TITLE -->
   <div class="page-title">会員登録</div>
 
-  <!-- FORM -->
-  <form class="container" action="register-confirm.html" method="get">
+  <!-- ✅ FORM (submit sẽ bị JS chặn để lưu sessionStorage) -->
+  <form id="register-form" class="container" novalidate>
 
     <!-- 名前 -->
     <div class="row">
@@ -120,7 +120,7 @@
         <div class="label">
           名前<span class="required">＊</span>
         </div>
-        <input type="text" name="name" class="input" required>
+        <input type="text" name="name" class="input" required autocomplete="name">
       </div>
     </div>
 
@@ -130,7 +130,7 @@
         <div class="label">
           Eメール<span class="required">＊</span>
         </div>
-        <input type="email" name="email" class="input" required>
+        <input type="email" name="email" class="input" required autocomplete="email">
       </div>
     </div>
 
@@ -140,7 +140,7 @@
         <div class="label">
           携帯電話番号<span class="required">＊</span>
         </div>
-        <input type="tel" name="phone" class="input" required>
+        <input type="tel" name="phone" class="input" required autocomplete="tel">
 
         <div class="sub-text">
           この携帯電話番号ですばやくサインインし、パスワードを簡単に回復し、
@@ -155,7 +155,7 @@
         <div class="label">
           パスワード<span class="required">＊</span>
         </div>
-        <input type="password" name="password" class="input" required>
+        <input type="password" name="password" class="input" required autocomplete="new-password">
       </div>
     </div>
 
@@ -165,32 +165,56 @@
     </div>
 
   </form>
-<script>
-  document.querySelectorAll('input[required]').forEach(input => {
-    input.addEventListener('invalid', () => {
-      if (input.validity.valueMissing) {
-        switch (input.name) {
-          case 'name':
-            input.setCustomValidity('名前を入力してください');
-            break;
-          case 'email':
-            input.setCustomValidity('Eメールを入力してください');
-            break;
-          case 'phone':
-            input.setCustomValidity('携帯電話番号を入力してください');
-            break;
-          case 'password':
-            input.setCustomValidity('パスワードを入力してください');
-            break;
+
+  <script>
+    // ✅ Nhật hoá message required (anh đã làm đúng, giữ lại)
+    document.querySelectorAll('input[required]').forEach(input => {
+      input.addEventListener('invalid', () => {
+        if (input.validity.valueMissing) {
+          switch (input.name) {
+            case 'name': input.setCustomValidity('名前を入力してください'); break;
+            case 'email': input.setCustomValidity('Eメールを入力してください'); break;
+            case 'phone': input.setCustomValidity('携帯電話番号を入力してください'); break;
+            case 'password': input.setCustomValidity('パスワードを入力してください'); break;
+          }
+        } else {
+          input.setCustomValidity('');
         }
-      }
+      });
+
+      input.addEventListener('input', () => {
+        input.setCustomValidity('');
+      });
     });
 
-    input.addEventListener('input', () => {
-      input.setCustomValidity('');
+    // ✅ KEY FIX: submit -> store sessionStorage -> go confirm
+    const form = document.getElementById('register-form');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Browser validation trigger
+      if (!form.checkValidity()) {
+        form.reportValidity(); // sẽ hiện message tiếng Nhật từ setCustomValidity
+        return;
+      }
+
+      const fd = new FormData(form);
+      const name = String(fd.get('name') || '').trim();
+      const email = String(fd.get('email') || '').trim();
+      const phone = String(fd.get('phone') || '').trim();
+      const password = String(fd.get('password') || '');
+
+      // ✅ Lưu tạm (confirm page sẽ đọc)
+      sessionStorage.setItem('name', name);
+      sessionStorage.setItem('email', email);
+      sessionStorage.setItem('phone', phone);
+      sessionStorage.setItem('password', password);
+
+      // ✅ Move to confirm page
+      location.href = 'register-confirm.html';
     });
-  });
-</script>
+  </script>
 
 </body>
 </html>
