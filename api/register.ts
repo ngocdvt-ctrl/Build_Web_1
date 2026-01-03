@@ -2,21 +2,22 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import bcrypt from "bcrypt";
 import { Pool } from "pg";
 import crypto from "crypto";
+import { Resend } from "resend";
 
-/* ==============================
-   PostgreSQL connection pool
-============================== */
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-/* ==============================
-   API: POST /api/register
-============================== */
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+function getBaseUrl(req: VercelRequest) {
+  // Ưu tiên env khi deploy
+  if (process.env.APP_BASE_URL) return process.env.APP_BASE_URL.replace(/\/$/, "");
+  // Fallback cho local/dev
+  const host = req.headers.host;
+  const proto = (req.headers["x-forwarded-proto"] as string) || "http";
+  return `${proto}://${host}`;
+}
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method Not Allowed" });
   }
@@ -24,53 +25,35 @@ export default async function handler(
   const client = await pool.connect();
 
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password } = req.body ?? {};
 
-    /* ==============================
-       1️⃣ Validate input
-    ============================== */
+    // 1) Validate
     if (!name || !email || !phone || !password) {
-      return res.status(400).json({
-        message: "必須項目が不足しています",
-      });
+      return res.status(400).json({ message: "必須項目が不足しています" });
     }
 
-    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedEmail = String(email).toLowerCase().trim();
 
-    /* ==============================
-       2️⃣ Start transaction
-    ============================== */
+    // 2) Begin
     await client.query("BEGIN");
 
-    /* ==============================
-       3️⃣ Check duplicate email
-    ============================== */
-    const existing = await client.query(
-      "SELECT id FROM users WHERE email = $1",
-      [normalizedEmail]
-    );
-
+    // 3) Duplicate check
+    const existing = await client.query("SELECT id FROM users WHERE email = $1", [
+      normalizedEmail,
+    ]);
     if (existing.rowCount && existing.rowCount > 0) {
       await client.query("ROLLBACK");
-      return res.status(409).json({
-        message: "このメールアドレスは既に登録されています",
-      });
+      return res.status(409).json({ message: "このメールアドレスは既に登録されています" });
     }
 
-    /* ==============================
-       4️⃣ Hash password
-    ============================== */
-    const passwordHash = await bcrypt.hash(password, 10);
+    // 4) Hash
+    const passwordHash = await bcrypt.hash(String(password), 10);
 
-    /* ==============================
-       5️⃣ Create verification token
-    ============================== */
+    // 5) Token + expiry
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const tokenExpiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
 
-    /* ==============================
-       6️⃣ Insert pending user
-    ============================== */
+    // 6) Insert pending user
     await client.query(
       `
       INSERT INTO users (
@@ -78,47 +61,61 @@ export default async function handler(
         email,
         phone,
         password_hash,
+        role,
         status,
         verification_token,
         verification_token_expires_at,
-        created_at
+        created_at,
+        updated_at
       )
-      VALUES ($1, $2, $3, $4, 'pending', $5, $6, NOW())
+      VALUES ($1, $2, $3, $4, 'user', 'pending', $5, $6, NOW(), NOW())
       `,
-      [
-        name,
-        normalizedEmail,
-        phone,
-        passwordHash,
-        verificationToken,
-        tokenExpiresAt,
-      ]
+      [name, normalizedEmail, phone, passwordHash, verificationToken, tokenExpiresAt]
     );
 
-    /* ==============================
-       7️⃣ Commit transaction
-    ============================== */
+    // 7) Commit DB
     await client.query("COMMIT");
 
-    /* ==============================
-       8️⃣ Send verification email (DEV)
-    ============================== */
-    // TODO: Integrate Resend / SendGrid / SES
-    console.log(
-      `[DEV] Verify URL:
-      https://ngoc-web.vercel.app/api/verify-email?token=${verificationToken}`
-    );
+    // 8) Send email via Resend (REAL)
+    const resendKey = process.env.RESEND_API_KEY;
+    if (!resendKey) {
+      console.warn("RESEND_API_KEY is missing. Email not sent.");
+      // DB đã insert rồi, trả message để anh debug
+      return res.status(201).json({
+        message:
+          "仮登録が完了しました（メール送信設定が未完了です）。RESEND_API_KEYを設定してください。",
+      });
+    }
+
+    const resend = new Resend(resendKey);
+
+    const baseUrl = getBaseUrl(req);
+    // ✅ thống nhất endpoint verify: anh đang có verify-email.ts -> dùng /api/verify-email
+    const verifyUrl = `${baseUrl}/api/verify-email?token=${verificationToken}`;
+
+    await resend.emails.send({
+      from: process.env.MAIL_FROM || "onboarding@resend.dev",
+      to: normalizedEmail,
+      subject: "【ngoc-web】メールアドレス確認",
+      html: `
+        <p>${name} 様</p>
+        <p>以下のリンクをクリックしてメールアドレスを確認してください。</p>
+        <p><a href="${verifyUrl}">${verifyUrl}</a></p>
+        <p>※リンクの有効期限：1時間</p>
+      `,
+    });
 
     return res.status(201).json({
       message: "仮登録が完了しました。確認メールをご確認ください。",
     });
   } catch (error) {
-    await client.query("ROLLBACK");
-    console.error("Register error:", error);
+    // rollback chỉ khi transaction đang mở (có thể fail trước COMMIT)
+    try {
+      await client.query("ROLLBACK");
+    } catch {}
 
-    return res.status(500).json({
-      message: "サーバーエラーが発生しました",
-    });
+    console.error("Register error:", error);
+    return res.status(500).json({ message: "サーバーエラーが発生しました" });
   } finally {
     client.release();
   }
