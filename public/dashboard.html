@@ -8,7 +8,12 @@
   <!-- CSS chung -->
   <link rel="stylesheet" href="style.css">
 
+  <!-- 🔒 Anti-flicker: ẩn toàn bộ trang cho đến khi auth OK -->
   <style>
+    body {
+      visibility: hidden;
+    }
+
     .dashboard-header {
       display: flex;
       justify-content: space-between;
@@ -35,8 +40,17 @@
 
   <!-- HEADER -->
   <div class="dashboard-header">
-    <div class="dashboard-title">Dashboard</div>
-    <button type="button" class="back-btn" onclick="logout()">Logout</button>
+    <div class="dashboard-title" id="dashboard-title">
+      Dashboard
+    </div>
+
+    <button
+      type="button"
+      class="back-btn"
+      onclick="logout()"
+    >
+      Logout
+    </button>
   </div>
 
   <!-- CONTENT -->
@@ -49,10 +63,16 @@
   <!-- AUTH SCRIPT -->
   <script src="auth.js"></script>
   <script>
-    // ✅ Protect this page: nếu chưa login → auth.js sẽ redirect
+    // 🔐 Protect page + remove flicker
     protectPage((user) => {
-      console.log("Logged in user:", user);
-      // sau này anh có thể hiển thị user.name ở đây
+      // Optional: hiển thị tên user
+      const title = document.getElementById("dashboard-title");
+      if (user?.name) {
+        title.textContent = `Dashboard – ${user.name}`;
+      }
+
+      // ✅ Cho phép hiển thị trang sau khi auth OK
+      document.body.style.visibility = "visible";
     });
   </script>
 
