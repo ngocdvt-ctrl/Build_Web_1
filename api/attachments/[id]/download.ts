@@ -1,17 +1,14 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Storage } from "@google-cloud/storage";
-
-// Nếu anh đang dùng @vercel/postgres:
 import { sql } from "@vercel/postgres";
 
 // -------------------------
 // Config
 // -------------------------
-const COOKIE_NAME = process.env.COOKIE_NAME || "session_token";
+const COOKIE_NAME = process.env.COOKIE_NAME || "session"; // ✅ khớp login.ts
 const SIGNED_URL_EXPIRES_MS = 5 * 60 * 1000; // 5 phút
 
-function parseCookies(req: VercelRequest): Record<string, string> {
-  const header = req.headers.cookie;
+function parseCookies(header?: string): Record<string, string> {
   if (!header) return {};
   return header.split(";").reduce((acc, part) => {
     const [k, ...v] = part.trim().split("=");
@@ -21,22 +18,24 @@ function parseCookies(req: VercelRequest): Record<string, string> {
   }, {} as Record<string, string>);
 }
 
+function getCookie(req: VercelRequest, name: string): string | null {
+  const cookies = parseCookies(req.headers.cookie);
+  return cookies[name] || null;
+}
+
 function getGcsClient(): Storage {
   const json = process.env.GCS_SERVICE_ACCOUNT_JSON;
   if (!json) throw new Error("Missing env: GCS_SERVICE_ACCOUNT_JSON");
 
-  // JSON có thể đã bị xuống dòng; parse vẫn OK
+  // JSON string trong env
   const credentials = JSON.parse(json);
   return new Storage({ credentials });
 }
 
 async function requireSessionUser(req: VercelRequest): Promise<{ user_id: string } | null> {
-  const cookies = parseCookies(req);
-  const sessionToken = cookies[COOKIE_NAME];
+  const sessionToken = getCookie(req, COOKIE_NAME);
   if (!sessionToken) return null;
 
-  // Kiểm tra session trong DB: tồn tại + chưa hết hạn
-  // Adjust query nếu schema sessions của anh khác.
   const { rows } = await sql`
     SELECT user_id
     FROM sessions
@@ -68,11 +67,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ message: "Missing attachment id" });
     }
 
-    // 3) Load attachment metadata from DB
+    // 3) Load attachment metadata + (optional) check post published
+    //    - Nếu anh chưa có bảng posts/published, anh có thể bỏ JOIN và WHERE posts.published
     const { rows } = await sql`
-      SELECT id, filename, storage_provider, storage_key, content_type
-      FROM attachments
-      WHERE id = ${id}
+      SELECT
+        a.id,
+        a.filename,
+        a.storage_provider,
+        a.storage_key,
+        a.content_type,
+        a.post_id,
+        p.published
+      FROM attachments a
+      LEFT JOIN posts p ON p.id = a.post_id
+      WHERE a.id = ${id}
       LIMIT 1
     `;
 
@@ -86,13 +94,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       storage_provider: string;
       storage_key: string;
       content_type: string | null;
+      post_id: string | null;
+      published: boolean | null;
     };
 
-    // 4) (Optional) Nếu anh muốn chặn download tuỳ theo bài post published hay quyền user,
-    // anh có thể join posts ở đây và check thêm.
-    // Hiện tại: đã login là cho tải.
+    // Nếu attachment không map tới post nào => chặn (tránh download id rác)
+    if (!attachment.post_id) {
+      return res.status(400).json({ message: "Attachment not linked to a post" });
+    }
 
-    // 5) Generate signed URL (GCS)
+    // Attachment thuộc post chưa published => chặn (tuỳ anh muốn)
+    // Nếu anh muốn "login là tải được kể cả unpublished", thì comment đoạn này.
+    if (attachment.published === false) {
+      return res.status(403).json({ message: "Post is not published" });
+    }
+
+    // 4) Generate signed URL (GCS)
     if (attachment.storage_provider !== "gcs") {
       return res.status(400).json({ message: "Unsupported storage provider" });
     }
@@ -103,14 +120,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const storage = getGcsClient();
     const file = storage.bucket(bucket).file(attachment.storage_key);
 
+    // 5) Signed URL v4 (read)
     const [signedUrl] = await file.getSignedUrl({
       version: "v4",
       action: "read",
       expires: Date.now() + SIGNED_URL_EXPIRES_MS,
-      // (Optional) enforce content-type on response:
+
+      // ✅ Ép download + đúng tên file
+      responseDisposition: `attachment; filename="${encodeURIComponent(attachment.filename)}"`,
+
+      // (optional) Nếu muốn set content-type response
       // responseType: attachment.content_type ?? undefined,
-      // (Optional) force download filename:
-      // responseDisposition: `attachment; filename="${encodeURIComponent(attachment.filename)}"`,
     });
 
     // 6) Redirect để browser tải trực tiếp từ GCS
