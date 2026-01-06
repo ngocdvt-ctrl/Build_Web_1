@@ -149,7 +149,7 @@
         }
 
         // ② Send verification email (separate API)
-        const r2 = await fetch("/api/send-verify-email", {
+        const r2 = await fetch("/api/resend", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }), // chỉ cần email là đủ
