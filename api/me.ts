@@ -43,6 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         u.id,
         u.name,
         u.email,
+        u.phone,
         u.role,
         u.status
       FROM sessions s
