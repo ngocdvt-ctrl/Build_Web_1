@@ -593,3 +593,22 @@ small{ font-size: 12px; }
   .hero-title{ font-size: 28px; }
   .news-item{ grid-template-columns: 92px 1fr 18px; }
 }
+
+/* ===== Outline Gray Button (Logout) ===== */
+.btn-outline-gray{
+  background: #fff;
+  color: #555;
+  border: 2px solid #bbb;
+  padding: 10px 26px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.btn-outline-gray:hover{
+  background: #f3f3f3;
+  border-color: #999;
+  color: #333;
+}
