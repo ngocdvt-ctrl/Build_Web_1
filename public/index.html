@@ -1,78 +1,321 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appirits - Corporate Website</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Bổ sung một chút để xử lý riêng cho trang chủ không bị dính khung trắng của form */
-        .hp-main {
-            background: transparent !important;
-            box-shadow: none !important;
-            border: none !important;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ngoc-web - Corporate Website</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-    <header>
-        <nav class="container container-wide">
-            <ul>
-                <li><a href="/">会社概要</a></li>
-                <li><a href="/services">サービス・製品</a></li>
-                <li><a href="/news">ニュース</a></li>
-                <li><a href="/recruit">採用情報</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <main class="container container-wide hp-main">
-        
-        <section class="slider">
-            <button class="arrow prev" type="button">&lt;</button>
-            <div class="slider-content">
-                <h2>IT関連写真</h2>
-            </div>
-            <button class="arrow next" type="button">&gt;</button>
-        </section>
+<body class="home">
 
-        <section class="auth-form container">
-            <div style="padding: 20px;"> 
-                <div class="button-group">
-                    <button type="button" class="confirm-btn btn-login" onclick="location.href='login.html'">ログイン</button>
-                </div>
-            </div>
-        </section>
-
-        <section class="contact-info">
-            <a href="tel:03-6684-5111" class="contact-item tel">
-                <span>00-0000-0000</span>
-            </a>
-            <a href="/contact" class="contact-item form">
-                <span>お問い合わせフォーム</span>
-            </a>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container container-wide">
-            <div class="footer-grid">
-                <div class="company-info">
-                    <img src="logo.png" alt="API" class="logo" style="width: 100px;">
-                    <p>株式会社API</p>
-                    <p>〒000-0000 東京都渋谷区増田町1番1号</p>
-                    <p>SHIBUYA STRATERGY BUILDING 100FLOOR</p>
-                </div>
-                <div class="footer-links">
-                    <p>AWS × 協働内製化</p>
-                    <p>内製アプリ開発</p>
-                    <p>AI搭載自動化</p>
-                    <p>脆弱性強化</p>
-                </div>
-            </div>
+  <!-- =========================
+       HEADER (sticky)
+  ========================== -->
+  <header class="site-header">
+    <div class="container-xl header-inner">
+      <a class="brand" href="index.html" aria-label="ngoc-web home">
+        <div class="brand-mark">N</div>
+        <div class="brand-text">
+          <div class="brand-name">ngoc-web</div>
+          <div class="brand-sub">DIGITAL × TECHNOLOGY × CREATIVE</div>
         </div>
-    </footer>
+      </a>
 
-    <script src="script.js"></script>
+      <nav class="site-nav" aria-label="primary">
+        <a href="#about">会社概要</a>
+        <a href="#services">サービス・製品</a>
+        <a href="#works">実績</a>
+        <a href="#news">ニュース</a>
+        <a href="#recruit">採用情報</a>
+        <a href="#contact">お問い合わせ</a>
+      </nav>
+
+      <!-- ✅ Login góc phải, cùng hàng menu -->
+      <div class="header-right">
+        <a class="btn btn-outline" href="login.html">ログイン</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================
+       HERO
+  ========================== -->
+  <main>
+    <section class="hero">
+      <div class="hero-bg"></div>
+
+      <div class="container-xl hero-inner">
+        <div class="hero-copy">
+          <h1 class="hero-title">
+            セカイに愛される<br />
+            インターネットサービスをつくり続ける
+          </h1>
+          <p class="hero-sub">
+            DIGITAL × TECHNOLOGY × CREATIVE
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#about">About Us</a>
+            <a class="btn btn-ghost" href="#services">サービスを見る</a>
+          </div>
+        </div>
+
+        <div class="hero-badge" aria-hidden="true">
+          <div class="hero-badge-ring"></div>
+          <div class="hero-badge-core">About Us</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         WORKS / CASES
+    ========================== -->
+    <section id="works" class="section">
+      <div class="container-xl">
+        <div class="section-head">
+          <div class="section-kicker">WORKS</div>
+          <h2 class="section-title">実績</h2>
+        </div>
+
+        <div class="cards-row" role="list">
+          <article class="card" role="listitem">
+            <div class="card-thumb"></div>
+            <div class="card-body">
+              <div class="card-title">株式会社〇〇様</div>
+              <div class="card-desc">Webサイト / システム開発</div>
+            </div>
+          </article>
+
+          <article class="card" role="listitem">
+            <div class="card-thumb"></div>
+            <div class="card-body">
+              <div class="card-title">株式会社△△様</div>
+              <div class="card-desc">EC / 業務改善</div>
+            </div>
+          </article>
+
+          <article class="card" role="listitem">
+            <div class="card-thumb"></div>
+            <div class="card-body">
+              <div class="card-title">株式会社□□様</div>
+              <div class="card-desc">AI導入支援</div>
+            </div>
+          </article>
+
+          <article class="card" role="listitem">
+            <div class="card-thumb"></div>
+            <div class="card-body">
+              <div class="card-title">株式会社◇◇様</div>
+              <div class="card-desc">クラウド移行</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         ABOUT / BUSINESS SOLUTION
+    ========================== -->
+    <section id="about" class="section section-alt">
+      <div class="container-xl split">
+        <div class="split-left">
+          <div class="section-kicker">WEB BUSINESS SOLUTION</div>
+          <h2 class="section-title-lg">
+            ngoc-webは<br />
+            企業のWebビジネスの変革に<br />
+            最適なビジネスパートナーです
+          </h2>
+
+          <p class="lead">
+            小規模〜中規模のプロダクト開発を中心に、堅牢で拡張しやすい設計と、
+            使いやすいUI/UXで成果につながるサービスを提供します。
+          </p>
+
+          <div class="pill-group">
+            <span class="pill">AWS × 協働内製化</span>
+            <span class="pill">生成AI × 業務効率化</span>
+            <span class="pill">セキュリティ強化</span>
+            <span class="pill">スタートアップ支援</span>
+          </div>
+        </div>
+
+        <div class="split-right">
+          <div class="illustration">
+            <div class="cube"></div>
+            <div class="cube cube-sm"></div>
+            <div class="cube cube-xs"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         SERVICES
+    ========================== -->
+    <section id="services" class="section">
+      <div class="container-xl">
+        <div class="section-head">
+          <div class="section-kicker">SERVICES</div>
+          <h2 class="section-title">よくお問い合わせいただいているサービス</h2>
+        </div>
+
+        <div class="grid-4">
+          <article class="svc-card">
+            <div class="svc-icon">☁️</div>
+            <h3 class="svc-title">AWS × 協働内製化</h3>
+            <p class="svc-desc">設計から運用まで、内製化を支援します。</p>
+          </article>
+
+          <article class="svc-card">
+            <div class="svc-icon">🤖</div>
+            <h3 class="svc-title">生成AI × Web業務効率化</h3>
+            <p class="svc-desc">AI導入で業務の自動化を加速します。</p>
+          </article>
+
+          <article class="svc-card">
+            <div class="svc-icon">✅</div>
+            <h3 class="svc-title">エンジニアアサイン</h3>
+            <p class="svc-desc">必要なスキルセットを柔軟に提供します。</p>
+          </article>
+
+          <article class="svc-card">
+            <div class="svc-icon">🛡️</div>
+            <h3 class="svc-title">セキュリティ強化</h3>
+            <p class="svc-desc">診断・改善・運用を一貫して支援。</p>
+          </article>
+
+          <article class="svc-card">
+            <div class="svc-icon">🛒</div>
+            <h3 class="svc-title">ECソリューション</h3>
+            <p class="svc-desc">EC構築から改善までをサポートします。</p>
+          </article>
+
+          <article class="svc-card">
+            <div class="svc-icon">🔎</div>
+            <h3 class="svc-title">サイト内検索ツール</h3>
+            <p class="svc-desc">検索体験の改善でCV向上を支援します。</p>
+          </article>
+
+          <article class="svc-card">
+            <div class="svc-icon">🧩</div>
+            <h3 class="svc-title">Web接客ツール</h3>
+            <p class="svc-desc">導線設計で問い合わせを増やします。</p>
+          </article>
+
+          <article class="svc-card">
+            <div class="svc-icon">💬</div>
+            <h3 class="svc-title">生成AI × FAQ</h3>
+            <p class="svc-desc">FAQ運用を省力化し品質を安定化。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         RECRUIT BANNER
+    ========================== -->
+    <section id="recruit" class="recruit">
+      <div class="container-xl recruit-inner">
+        <div>
+          <div class="recruit-kicker">COME JOIN US - WE'RE HIRING!</div>
+          <h2 class="recruit-title">Application "Software" Spirits</h2>
+          <p class="recruit-desc">
+            私たちと一緒に、セカイの人々に愛されるサービスをつくりましょう。
+          </p>
+        </div>
+        <a class="btn btn-outline-light" href="#contact">採用情報はこちら</a>
+      </div>
+    </section>
+
+    <!-- =========================
+         NEWS
+    ========================== -->
+    <section id="news" class="section">
+      <div class="container-xl">
+        <div class="section-head row-between">
+          <div>
+            <div class="section-kicker">NEWS</div>
+            <h2 class="section-title">ニュース</h2>
+          </div>
+          <a class="btn btn-outline" href="#">プレスリリースを見る</a>
+        </div>
+
+        <div class="news-list">
+          <a class="news-item" href="#">
+            <span class="news-date">2026.01.08</span>
+            <span class="news-title">プロダクト機能を改善しました</span>
+            <span class="news-arrow">→</span>
+          </a>
+          <a class="news-item" href="#">
+            <span class="news-date">2026.01.05</span>
+            <span class="news-title">会員情報ページを公開しました</span>
+            <span class="news-arrow">→</span>
+          </a>
+          <a class="news-item" href="#">
+            <span class="news-date">2026.01.02</span>
+            <span class="news-title">サイトをリニューアルしました</span>
+            <span class="news-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         CONTACT (bottom fixed style like JP sites)
+    ========================== -->
+    <section id="contact" class="contact-float">
+      <a href="tel:03-6684-5111" class="contact-chip">
+        <span class="chip-ic">☎</span>
+        <span>03-6684-5111</span>
+      </a>
+      <a href="#" class="contact-chip contact-chip-dark">
+        <span class="chip-ic">✉</span>
+        <span>お問い合わせフォーム</span>
+      </a>
+    </section>
+  </main>
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer class="site-footer">
+    <div class="container-xl footer-grid">
+      <div class="footer-company">
+        <div class="footer-brand">
+          <div class="brand-mark brand-mark-sm">N</div>
+          <div>
+            <div class="brand-name">ngoc-web</div>
+            <div class="brand-sub">DIGITAL × TECHNOLOGY × CREATIVE</div>
+          </div>
+        </div>
+        <p class="footer-text">〒000-0000 東京都渋谷区増田町1番1号</p>
+        <p class="footer-text">SHIBUYA STRATERGY BUILDING 100FLOOR</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#services">AWS × 協働内製化</a>
+        <a href="#services">内製アプリ開発</a>
+        <a href="#services">AI搭載自動化</a>
+        <a href="#services">脆弱性強化</a>
+      </div>
+
+      <div class="footer-links">
+        <a href="#works">実績</a>
+        <a href="#news">ニュース</a>
+        <a href="#recruit">採用情報</a>
+        <a href="#contact">お問い合わせ</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container-xl">
+        <small>© ngoc-web. All rights reserved.</small>
+      </div>
+    </div>
+  </footer>
+
+  <!-- script.js giữ nguyên nếu anh đang dùng -->
+  <script src="script.js"></script>
 </body>
 </html>
