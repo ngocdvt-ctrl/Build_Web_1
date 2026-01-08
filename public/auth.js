@@ -50,7 +50,7 @@ async function logout() {
    Redirect helpers
 ============================== */
 function redirectToLogin() {
-  location.href = "login.html";
+  location.href = "index.html";
 }
 
 /* ==============================
