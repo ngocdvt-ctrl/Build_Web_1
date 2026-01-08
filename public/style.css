@@ -414,3 +414,21 @@ body{
 .footer-links a:hover{
   text-decoration: underline;
 }
+.site-footer{
+  margin-top: 40px;
+  background: #0b1220;
+  color: rgba(255,255,255,.9);
+  padding-top: 32px;
+}
+
+.footer-text{
+  margin-top: 8px;
+  font-size: 13px;
+  color: rgba(255,255,255,.75);
+}
+
+.footer-brand{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
