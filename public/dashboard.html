@@ -5,239 +5,284 @@
   <title>Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Base (buttons/form look) -->
   <link rel="stylesheet" href="auth.css">
+  <!-- Site layout -->
   <link rel="stylesheet" href="style.css">
-
 
   <style>
     body { visibility: hidden; }
 
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px;
+    .dashboard-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      max-width:1000px;
+      margin:0 auto;
+      padding:20px;
+    }
+    .dashboard-title{
+      font-size:22px;
+      font-weight:600;
+    }
+    .dashboard-content{
+      max-width:1000px;
+      margin:0 auto;
+      padding:0 20px 40px;
     }
 
-    .dashboard-title {
-      font-size: 22px;
-      font-weight: 600;
+    table.profile-table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:20px;
     }
-
-    .dashboard-content {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 20px 40px;
-    }
-
-    table.profile-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
     table.profile-table th,
-    table.profile-table td {
-      border-bottom: 1px solid #ddd;
-      padding: 12px 8px;
-      vertical-align: middle;
+    table.profile-table td{
+      border-bottom:1px solid #ddd;
+      padding:12px 8px;
+      vertical-align:middle;
+    }
+    table.profile-table th{
+      width:180px;
+      background:#f7f7f7;
+      font-weight:500;
+    }
+    td.action{
+      width:110px;
+      text-align:right;
+    }
+    .edit-btn{
+      padding:6px 12px;
+      font-size:13px;
+      cursor:pointer;
     }
 
-    table.profile-table th {
-      width: 180px;
-      background: #f7f7f7;
-      font-weight: 500;
+    /* Admin section */
+    #admin-section{
+      display:none;
+      margin-top:40px;
+      border-top:1px solid #ddd;
+      padding-top:24px;
     }
-
-    td.action {
-      width: 100px;
-      text-align: right;
+    #admin-section h3{
+      font-size:18px;
+      margin-bottom:12px;
     }
-
-    .edit-btn {
-      padding: 6px 12px;
-      font-size: 13px;
-      cursor: pointer;
+    #admin-controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
     }
-
-    /* admin */
-    #admin-section {
-      display: none;
-      margin-top: 40px;
-      border-top: 1px solid #ddd;
-      padding-top: 24px;
+    #admin-email{
+      padding:6px 8px;
+      width:280px;
     }
-
-    #admin-section h3 {
-      font-size: 18px;
-      margin-bottom: 12px;
+    #admin-role{
+      padding:6px 8px;
     }
-
-    #admin-message {
-      margin-top: 8px;
-      font-size: 13px;
+    #change-role-btn{
+      padding:6px 14px;
+      cursor:pointer;
+    }
+    #admin-message{
+      margin-top:10px;
+      font-size:13px;
     }
   </style>
 </head>
 
 <body>
-
-<!-- HEADER -->
-<div class="dashboard-header">
-  <div class="dashboard-title" id="dashboard-title">Dashboard</div>
-  <button type="button" class="back-btn" onclick="logout()">ログアウト</button>
-</div>
-
-<!-- CONTENT -->
-<div class="dashboard-content">
-
-  <!-- PROFILE TABLE -->
-  <table class="profile-table">
-    <tr>
-      <th>名前</th>
-      <td id="profile-name">---</td>
-      <td class="action">
-        <button class="edit-btn" data-field="name">編集</button>
-      </td>
-    </tr>
-
-    <tr>
-      <th>電話番号</th>
-      <td id="profile-phone">---</td>
-      <td class="action">
-        <button class="edit-btn" data-field="phone">編集</button>
-      </td>
-    </tr>
-
-    <tr>
-      <th>Eメール</th>
-      <td id="profile-email">---</td>
-      <td class="action">
-      </td>
-    </tr>
-
-    <tr>
-      <th>ロール</th>
-      <td id="profile-role">---</td>
-      <td class="action"></td>
-    </tr>
-
-    <tr>
-      <th>パスワード</th>
-      <td>********</td>
-      <td class="action"></td>
-    </tr>
-  </table>
-
-  <!-- ADMIN SECTION -->
-  <div id="admin-section">
-    <h3>管理者機能</h3>
-
-    <input id="admin-email" type="email" placeholder="ユーザーのメール" />
-    <select id="admin-role">
-      <option value="user">user</option>
-      <option value="admin">admin</option>
-    </select>
-    <button id="admin-update-btn">ロール変更</button>
-
-    <div id="admin-message"></div>
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <div class="dashboard-title" id="dashboard-title">Dashboard</div>
+    <button type="button" class="back-btn" onclick="logout()">ログアウト</button>
   </div>
 
-</div>
+  <!-- CONTENT -->
+  <div class="dashboard-content">
+    <table class="profile-table">
+      <tr>
+        <th>名前</th>
+        <td id="profile-name">---</td>
+        <td class="action">
+          <button class="edit-btn" data-field="name">編集</button>
+        </td>
+      </tr>
 
-<!-- AUTH -->
-<script src="auth.js"></script>
-<script>
-  let currentUser = null;
-  let editing = null;
+      <tr>
+        <th>電話番号</th>
+        <td id="profile-phone">---</td>
+        <td class="action">
+          <button class="edit-btn" data-field="phone">編集</button>
+        </td>
+      </tr>
 
-  protectPage((user) => {
-    currentUser = user;
+      <tr>
+        <th>Eメール</th>
+        <td id="profile-email">---</td>
+        <td class="action"></td>
+      </tr>
 
-    document.getElementById("dashboard-title").textContent =
-      `Dashboard – ${user.name}`;
+      <tr>
+        <th>ロール</th>
+        <td id="profile-role">---</td>
+        <td class="action"></td>
+      </tr>
 
-    document.getElementById("profile-name").textContent = user.name ?? "";
-    document.getElementById("profile-email").textContent = user.email ?? "";
-    document.getElementById("profile-role").textContent = user.role ?? "";
-    document.getElementById("profile-phone").textContent = user.phone ?? "";
+      <tr>
+        <th>パスワード</th>
+        <td>********</td>
+        <td class="action"></td>
+      </tr>
+    </table>
 
-    document.getElementById("admin-section").style.display =
-      user.role === "admin" ? "block" : "none";
+    <!-- ADMIN -->
+    <div id="admin-section">
+      <h3>管理者機能</h3>
 
-    document.body.style.visibility = "visible";
-  });
+      <div id="admin-controls">
+        <input id="admin-email" type="email" placeholder="ユーザーのメール" />
+        <select id="admin-role">
+          <option value="user">user</option>
+          <option value="admin">admin</option>
+        </select>
+        <button id="change-role-btn" type="button">ロール変更</button>
+      </div>
 
-  document.addEventListener("click", async (e) => {
-    const btn = e.target.closest(".edit-btn");
-    if (!btn) return;
+      <div id="admin-message"></div>
+    </div>
+  </div>
 
-    const field = btn.dataset.field;
-    const td = document.getElementById(`profile-${field}`);
-    const original = td.textContent;
+  <!-- AUTH -->
+  <script src="auth.js"></script>
 
-    if (editing) return;
+  <script>
+    let currentUser = null;
+    let editing = null;
 
-    td.innerHTML = `<input id="edit-input" value="${original}" /> 
-      <button id="save-btn">保存</button>
-      <button id="cancel-btn">キャンセル</button>`;
+    function setAdminMessage(text, ok) {
+      const el = document.getElementById("admin-message");
+      el.textContent = text || "";
+      el.style.color = ok ? "green" : "red";
+    }
 
-    editing = { field, td, btn, original };
-    btn.disabled = true;
+    // Protect page + fill UI
+    protectPage((user) => {
+      currentUser = user;
 
-    document.getElementById("cancel-btn").onclick = () => {
-      td.textContent = original;
-      btn.disabled = false;
-      editing = null;
-    };
+      document.getElementById("dashboard-title").textContent =
+        `Dashboard – ${user.name ?? ""}`;
 
-    document.getElementById("save-btn").onclick = async () => {
-      const value = document.getElementById("edit-input").value.trim();
+      document.getElementById("profile-name").textContent = user.name ?? "";
+      document.getElementById("profile-phone").textContent = user.phone ?? "";
+      document.getElementById("profile-email").textContent = user.email ?? "";
+      document.getElementById("profile-role").textContent = user.role ?? "";
 
-      const payload = {
-        name: field === "name" ? value : currentUser.name,
-        phone: field === "phone" ? value : currentUser.phone,
+      // show admin only for admin
+      document.getElementById("admin-section").style.display =
+        user.role === "admin" ? "block" : "none";
+
+      document.body.style.visibility = "visible";
+    });
+
+    // Inline edit (name/phone)
+    document.addEventListener("click", async (e) => {
+      const btn = e.target.closest(".edit-btn");
+      if (!btn) return;
+
+      const field = btn.dataset.field; // name or phone
+      const td = document.getElementById(`profile-${field}`);
+      const original = td.textContent ?? "";
+
+      if (editing) return;
+
+      td.innerHTML = `
+        <input id="edit-input" value="${original}" />
+        <button id="save-btn" type="button">保存</button>
+        <button id="cancel-btn" type="button">キャンセル</button>
+      `;
+
+      editing = { field, td, btn, original };
+      btn.disabled = true;
+
+      document.getElementById("cancel-btn").onclick = () => {
+        td.textContent = original;
+        btn.disabled = false;
+        editing = null;
       };
 
-      const res = await fetch("/api/me", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
+      document.getElementById("save-btn").onclick = async () => {
+        const value = document.getElementById("edit-input").value.trim();
 
-      const data = await res.json();
-      if (!res.ok) {
-        alert(data.message);
+        const payload = {
+          name: field === "name" ? value : currentUser.name,
+          phone: field === "phone" ? value : currentUser.phone,
+        };
+
+        try {
+          const res = await fetch("/api/me", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(payload),
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (!res.ok) {
+            alert(data.message || "エラーが発生しました");
+            return;
+          }
+
+          currentUser = { ...currentUser, ...data };
+          td.textContent = currentUser[field] ?? "";
+          btn.disabled = false;
+          editing = null;
+        } catch (err) {
+          console.error(err);
+          alert("通信エラー");
+        }
+      };
+    });
+
+    // Admin: change role
+    document.getElementById("change-role-btn").addEventListener("click", async () => {
+      const email = document.getElementById("admin-email").value.trim();
+      const role = document.getElementById("admin-role").value;
+
+      setAdminMessage("", true);
+
+      if (!email) {
+        setAdminMessage("メールアドレスを入力してください", false);
         return;
       }
 
-      currentUser = { ...currentUser, ...data };
-      td.textContent = currentUser[field] ?? "";
-      btn.disabled = false;
-      editing = null;
-    };
-  });
+      if (!confirm(`「${email}」を ${role} に変更しますか？`)) return;
 
-  document.getElementById("admin-update-btn").onclick = async () => {
-    const email = document.getElementById("admin-email").value.trim();
-    const role = document.getElementById("admin-role").value;
-    const msg = document.getElementById("admin-message");
+      try {
+        const res = await fetch("/api/admin/users/role", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email, role }),
+        });
 
-    const res = await fetch("/api/admin/role", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ email, role }),
+        // If you return JSON {message}, read it
+        const data = await res.json().catch(() => ({}));
+
+        if (res.status === 204) {
+          setAdminMessage("ロールを変更しました", true);
+          return;
+        }
+
+        // Otherwise show server message if exists
+        setAdminMessage(data.message || "エラーが発生しました", false);
+      } catch (err) {
+        console.error(err);
+        setAdminMessage("通信エラーが発生しました", false);
+      }
     });
-
-    const data = await res.json();
-    msg.textContent = data.message;
-    msg.style.color = res.ok ? "green" : "red";
-  };
-</script>
-
+  </script>
 </body>
 </html>
