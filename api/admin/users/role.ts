@@ -1,14 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Pool } from "pg";
 
-/* ==============================
-   PostgreSQL connection
-============================== */
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
-
-const SESSION_MAX_AGE_SEC = 60 * 60 * 24 * 7; // 7 days
 
 /* ==============================
    Helpers
@@ -28,56 +23,50 @@ function clearSessionCookie(res: VercelResponse) {
   );
 }
 
-function isValidEmail(email: unknown): email is string {
-  return typeof email === "string" && email.includes("@") && email.length <= 255;
-}
-
-type UserRole = "user" | "admin";
-function isValidRole(role: unknown): role is UserRole {
+function isValidRole(role: unknown): role is "user" | "admin" {
   return role === "user" || role === "admin";
 }
 
 /* ==============================
-   API: PATCH /api/admin/users/role
-   Body: { email: string, role: "user" | "admin" }
+   PATCH /api/admin/users/role
 ============================== */
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(
+  req: VercelRequest,
+  res: VercelResponse
+) {
   if (req.method !== "PATCH") {
-    return res.status(405).json({ message: "Method Not Allowed" });
+    return res.status(405).end(); // Method Not Allowed
   }
 
   const sessionToken = req.cookies?.session;
   if (!sessionToken) {
-    return res.status(401).json({ message: "ログインしていません" });
+    return res.status(401).end(); // Unauthorized
   }
 
   const { email, role } = req.body ?? {};
 
-  // Validate input
-  if (!isValidEmail(email) || !isValidRole(role)) {
-    return res.status(400).json({ message: "入力が不正です" });
+  if (typeof email !== "string" || !email.includes("@")) {
+    return res.status(400).end(); // Bad Request
   }
 
-  const targetEmail = email.trim().toLowerCase();
+  if (!isValidRole(role)) {
+    return res.status(400).end();
+  }
 
   const client = await pool.connect();
+
   try {
     await client.query("BEGIN");
 
-    /* 1) Verify session + caller role (lock session row) */
+    /* 1️⃣ Get caller (admin check) */
     const callerResult = await client.query(
       `
-      SELECT
-        u.id,
-        u.email,
-        u.role,
-        u.status
+      SELECT u.id, u.role, u.status
       FROM sessions s
       JOIN users u ON u.id = s.user_id
       WHERE s.session_token = $1
         AND s.expires_at > now()
       FOR UPDATE
-      LIMIT 1
       `,
       [sessionToken]
     );
@@ -85,71 +74,60 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (callerResult.rowCount === 0) {
       await client.query("ROLLBACK");
       clearSessionCookie(res);
-      return res.status(401).json({ message: "セッションが無効です" });
+      return res.status(401).end();
     }
 
-    const caller = callerResult.rows[0] as {
-      id: number;
-      email: string;
-      role: string;
-      status: string;
-    };
+    const caller = callerResult.rows[0];
 
     if (caller.status !== "active") {
       await client.query("ROLLBACK");
-      clearSessionCookie(res);
-      return res.status(403).json({ message: "アカウントが有効ではありません" });
+      return res.status(403).end();
     }
 
     if (caller.role !== "admin") {
       await client.query("ROLLBACK");
-      return res.status(403).json({ message: "管理者権限がありません" });
+      return res.status(403).end(); // Forbidden
     }
 
-    /* 2) Find target user (lock user row) */
+    /* 2️⃣ Get target user */
     const targetResult = await client.query(
       `
-      SELECT id, email, role, status
+      SELECT id, role
       FROM users
-      WHERE lower(email) = $1
-      FOR UPDATE
+      WHERE email = $1
       LIMIT 1
+      FOR UPDATE
       `,
-      [targetEmail]
+      [email]
     );
 
     if (targetResult.rowCount === 0) {
       await client.query("ROLLBACK");
-      return res.status(404).json({ message: "ユーザーが見つかりません" });
+      return res.status(404).end(); // Not Found
     }
 
-    const target = targetResult.rows[0] as {
-      id: number;
-      email: string;
-      role: UserRole;
-      status: string;
-    };
+    const target = targetResult.rows[0];
 
-    // Optional hardening:
-    // - forbid changing inactive/pending accounts (uncomment if you want)
-    // if (target.status !== "active") {
-    //   await client.query("ROLLBACK");
-    //   return res.status(409).json({ message: "対象ユーザーが有効ではありません" });
-    // }
-
-    // Prevent self-demotion (recommended)
+    /* 3️⃣ Prevent self-demotion */
     if (target.id === caller.id && role !== "admin") {
       await client.query("ROLLBACK");
-      return res.status(409).json({ message: "自分の管理者権限は削除できません" });
+      return res.status(409).end(); // Conflict
     }
 
-    // No-op
-    if (target.role === role) {
-      await client.query("ROLLBACK");
-      return res.status(409).json({ message: "既に同じロールです" });
+    /* 4️⃣ Last admin guard */
+    if (target.role === "admin" && role !== "admin") {
+      const cnt = await client.query(
+        `SELECT COUNT(*)::int AS c FROM users WHERE role = 'admin'`
+      );
+      const adminCount = cnt.rows[0].c as number;
+
+      if (adminCount <= 1) {
+        await client.query("ROLLBACK");
+        return res.status(409).end(); // Conflict
+      }
     }
 
-    /* 3) Update role */
+    /* 5️⃣ Update role */
     await client.query(
       `
       UPDATE users
@@ -160,21 +138,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       [role, target.id]
     );
 
-    /* 4) Rolling session for caller (nice UX) */
-    const newExpiresAt = new Date(Date.now() + SESSION_MAX_AGE_SEC * 1000);
-    await client.query(
-      `UPDATE sessions SET expires_at = $1 WHERE session_token = $2`,
-      [newExpiresAt, sessionToken]
-    );
-
     await client.query("COMMIT");
 
-    // Production-like: 204 No Content
+    // No body needed (clean REST)
     return res.status(204).end();
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("PATCH /api/admin/users/role error:", err);
-    return res.status(500).json({ message: "サーバーエラーが発生しました" });
+    return res.status(500).end();
   } finally {
     client.release();
   }
