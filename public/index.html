@@ -29,9 +29,17 @@
         <a href="#contact">お問い合わせ</a>
       </nav>
 
-      <div class="header-right">
-        <a class="btn btn-outline" href="login.html">ログイン</a>
-      </div>
+<div class="header-right" id="header-auth-slot" style="visibility:hidden;">
+  <div class="auth-menu" id="auth-menu">
+    <a class="btn btn-outline" href="login.html" id="auth-main-btn">ログイン</a>
+
+    <div class="auth-dropdown" id="auth-dropdown">
+      <button type="button" class="auth-logout-btn" onclick="logoutFromIndex()">
+        ログアウト
+      </button>
+    </div>
+  </div>
+</div>
     </div>
   </header>
 

@@ -539,3 +539,17 @@
   .hero-title{ font-size: 28px; }
   .news-item{ grid-template-columns: 92px 1fr 18px; }
 }
+
+.auth-menu{ position:relative; display:inline-block; }
+.auth-dropdown{
+  position:absolute; top:calc(100% + 8px); right:0;
+  min-width:160px; background:#fff; border:1px solid var(--border);
+  border-radius:10px; box-shadow:var(--shadow); padding:8px;
+  display:none; z-index:100;
+}
+.auth-menu.is-logged-in:hover .auth-dropdown{ display:block; }
+.auth-logout-btn{
+  width:100%; padding:9px 12px; background:#fff; border:0; border-radius:8px;
+  cursor:pointer; text-align:left; font-weight:700;
+}
+.auth-logout-btn:hover{ background:#f5f5f5; }
