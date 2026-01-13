@@ -14,16 +14,100 @@
     .post-date{ margin-top: 8px; color: #64748b; font-weight: 700; }
     .post-body{ margin-top: 18px; line-height: 1.9; }
 
-    .post-attachments{ margin-top: 26px; padding-top: 18px; border-top: 1px solid #e5e7eb; }
-    .post-attachments h3{ font-size: 16px; font-weight: 900; margin-bottom: 10px; }
-    .post-attachments ul{ padding-left: 18px; line-height: 1.9; }
-    .post-attachments a{ text-decoration: underline; }
-    .post-attachments .hint{ margin-top: 10px; font-size: 12px; color: #64748b; }
+    .post-meta-gap{ margin-top: 22px; }
+
+    .attach-card{
+      margin-top: 18px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(2,6,23,.06);
+      overflow: hidden;
+    }
+    .attach-head{
+      padding: 14px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .attach-title{
+      font-weight: 900;
+      font-size: 14px;
+    }
+    .attach-sub{
+      color:#64748b;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .attach-list{ padding: 10px 10px 12px; }
+    .attach-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 12px;
+    }
+    .attach-item:hover{ background: #f8fafc; }
+    .attach-name{
+      font-weight: 800;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    .attach-actions{
+      display:flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn-sm{
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      border: 1px solid transparent;
+      cursor:pointer;
+      white-space: nowrap;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .btn-sm-outline{
+      background:#fff;
+      border-color:#e5e7eb;
+      color:#111827;
+    }
+    .btn-sm-outline:hover{
+      border-color:#cbd5e1;
+      background:#f8fafc;
+    }
+
+    .state{
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 14px;
+      display:none;
+    }
+    .state.err{
+      display:block;
+      background:#fdecec;
+      border:1px solid #f5c2c7;
+      color:#b02a37;
+    }
+    .state.info{
+      display:block;
+      background:#eef2ff;
+      border:1px solid #c7d2fe;
+      color:#1e3a8a;
+    }
   </style>
 </head>
 
 <body>
-  <!-- HEADER -->
+  <!-- Header: giống style chung -->
   <header class="site-header">
     <div class="container-xl header-inner">
       <a class="brand" href="index.html" aria-label="ngoc-web home">
@@ -36,15 +120,24 @@
     </div>
   </header>
 
-  <!-- CONTENT -->
   <main class="post-wrap">
     <h1 id="post-title" class="post-title">Loading...</h1>
     <div id="post-date" class="post-date"></div>
 
+    <div id="post-state" class="state"></div>
+
     <div id="post-content" class="post-body"></div>
 
     <!-- Attachments -->
-    <section id="post-attachments" class="post-attachments" style="display:none;"></section>
+    <div id="attach-card" class="attach-card" style="display:none;">
+      <div class="attach-head">
+        <div>
+          <div class="attach-title">添付資料</div>
+          <div class="attach-sub">ログイン中のみ閲覧できます</div>
+        </div>
+      </div>
+      <div id="attach-list" class="attach-list"></div>
+    </div>
   </main>
 
   <script>
@@ -58,93 +151,116 @@
         .replaceAll("\n", "<br>");
     }
 
-    function fmtDateYmd(input) {
-      if (!input) return "";
-      const dt = new Date(input);
-      if (Number.isNaN(dt.getTime())) return "";
-      const y = dt.getFullYear();
-      const m = String(dt.getMonth() + 1).padStart(2, "0");
-      const d = String(dt.getDate()).padStart(2, "0");
-      return `${y}/${m}/${d}`;
+    function ymd(dateStr) {
+      if (!dateStr) return "";
+      const dt = new Date(dateStr);
+      if (isNaN(dt.getTime())) return "";
+      return `${dt.getFullYear()}/${String(dt.getMonth()+1).padStart(2,"0")}/${String(dt.getDate()).padStart(2,"0")}`;
     }
 
-    function renderAttachments(attachments) {
-      const box = document.getElementById("post-attachments");
+    function setState(msg, type) {
+      const el = document.getElementById("post-state");
+      if (!msg) { el.style.display = "none"; el.textContent = ""; el.className = "state"; return; }
+      el.textContent = msg;
+      el.className = "state " + (type || "info");
+      el.style.display = "block";
+    }
 
-      const atts = Array.isArray(attachments) ? attachments : [];
-      if (atts.length === 0) {
-        box.style.display = "none";
-        box.innerHTML = "";
-        return;
+    function buildAttachmentRow(att) {
+      const row = document.createElement("div");
+      row.className = "attach-item";
+
+      const left = document.createElement("div");
+      left.className = "attach-name";
+      left.textContent = att.filename || "file";
+
+      const actions = document.createElement("div");
+      actions.className = "attach-actions";
+
+      const openBtn = document.createElement("a");
+      openBtn.className = "btn-sm btn-sm-outline";
+      openBtn.textContent = "開く";
+      openBtn.target = "_blank";
+      openBtn.rel = "noopener";
+
+      // ✅ Route đẹp: /api/attachments/{id}/download
+      openBtn.href = `/api/attachments/${encodeURIComponent(att.id)}/download`;
+
+      // TODO: nếu anh đang dùng route kiểu [id]download.ts (không folder)
+      // openBtn.href = `/api/attachments/${encodeURIComponent(att.id)}download`;
+
+      actions.appendChild(openBtn);
+
+      row.appendChild(left);
+      row.appendChild(actions);
+      return row;
+    }
+
+    async function fetchPost(postId) {
+      const res = await fetch(`/api/posts/${encodeURIComponent(postId)}`, { method: "GET" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || "Not Found");
+      return data;
+    }
+
+    async function fetchAttachments(postId) {
+      // ✅ Anh cần có API này: /api/posts/[id]/attachments (GET)
+      const res = await fetch(`/api/posts/${encodeURIComponent(postId)}/attachments`, { method: "GET", credentials: "include" });
+      const data = await res.json().catch(() => ([]));
+      if (res.status === 401) {
+        // chưa login
+        return { unauthorized: true, items: [] };
       }
-
-      // ✅ API path anh đang dùng: /api/attachments/[id]download.ts
-      // => URL sẽ là: /api/attachments/{id}download
-      const items = atts.map(a => {
-        const name = (a.filename || "download").toString();
-        const safeName = name
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#39;");
-
-        const attId = encodeURIComponent(String(a.id || "").trim());
-        const href = `/api/attachments/${attId}download`;
-
-        return `<li><a href="${href}" target="_blank" rel="noopener">${safeName}</a></li>`;
-      }).join("");
-
-      box.style.display = "block";
-      box.innerHTML = `
-        <h3>資料ダウンロード</h3>
-        <ul>${items}</ul>
-        <div class="hint">※ダウンロードにはログインが必要です。</div>
-      `;
+      if (!res.ok) throw new Error((data && data.message) || "Failed to load attachments");
+      return { unauthorized: false, items: Array.isArray(data) ? data : (data.items || []) };
     }
 
-    (async function () {
-      const titleEl = document.getElementById("post-title");
-      const dateEl = document.getElementById("post-date");
-      const contentEl = document.getElementById("post-content");
-
+    (async function init() {
       const params = new URLSearchParams(location.search);
       const id = (params.get("id") || "").trim();
 
       if (!id) {
-        titleEl.textContent = "Not Found";
+        document.getElementById("post-title").textContent = "Not Found";
+        setState("記事IDが指定されていません。", "err");
         return;
       }
 
       try {
-        const res = await fetch(`/api/posts/${encodeURIComponent(id)}`, {
-          method: "GET",
-        });
+        // 1) Post
+        const post = await fetchPost(id);
 
-        const data = await res.json().catch(() => ({}));
+        document.title = post.title || "Post";
+        document.getElementById("post-title").textContent = post.title || "";
+        document.getElementById("post-date").textContent = ymd(post.created_at);
 
-        if (!res.ok) {
-          titleEl.textContent = "Not Found";
-          dateEl.textContent = "";
-          contentEl.innerHTML = "";
-          return;
+        document.getElementById("post-content").innerHTML = escapeToBr(post.content || "");
+
+        // 2) Attachments (optional)
+        try {
+          const r = await fetchAttachments(id);
+
+          if (r.unauthorized) {
+            // không bắt lỗi, chỉ thông báo nhẹ
+            setState("添付資料を見るにはログインが必要です。", "info");
+            return;
+          }
+
+          const items = r.items || [];
+          if (!items.length) return;
+
+          const list = document.getElementById("attach-list");
+          list.innerHTML = "";
+          items.forEach((att) => list.appendChild(buildAttachmentRow(att)));
+
+          document.getElementById("attach-card").style.display = "block";
+        } catch (e) {
+          console.warn("attachments load failed:", e);
+          // attachments fail thì vẫn cho đọc post bình thường
         }
-
-        document.title = data.title || "Post";
-        titleEl.textContent = data.title || "";
-        dateEl.textContent = fmtDateYmd(data.created_at);
-
-        // Content (text -> <br>)
-        contentEl.innerHTML = escapeToBr(data.content || "");
-
-        // Attachments list
-        renderAttachments(data.attachments);
-
       } catch (e) {
         console.error(e);
-        titleEl.textContent = "Error";
-        dateEl.textContent = "";
-        contentEl.innerHTML = "";
+        document.getElementById("post-title").textContent = "Not Found";
+        setState("記事が見つかりませんでした。", "err");
       }
     })();
   </script>
