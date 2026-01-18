@@ -3,6 +3,7 @@ ngoc-web – ProductionレベルのフルスタックWebアプリ
 
 ngoc-web は、デモ用途ではなく実運用（production）を前提に設計・開発したフルスタックWebアプリケーションです。<br>
 バックエンド・フロントエンド・セキュリティ・クラウドの理解力を総合的に示すことを目的としています。<br>
+![Process](images/overview.png)
 
 **🔧 技術スタック**<br>
 Frontend: HTML / CSS / Vanilla JavaScript<br>
