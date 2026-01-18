@@ -24,5 +24,4 @@ Last Admin Guard を含む管理者フロー（production設計）<br>
 Tokenではなく実運用向けセッション認証<br>
 セキュリティ・クラウドストレージ・REST API・DB設計を理解<br>
 Race condition を考慮した実装<br>
-
 実際に本番環境で動作可能（デモ可）
